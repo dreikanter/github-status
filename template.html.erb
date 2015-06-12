@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>PassionDig</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+  <style>
+    h1 {
+      margin-top: 50px;
+      font-size: 28px;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    .issue__title {
+      margin: 0;
+    }
+
+    .issue__estimates-list {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    .status-icon {
+      color: gray;
+    }
+
+    .issue__estimates-list .issue__estimate:not(:first-of-type) {
+      color: silver;
+    }
+
+    .issue__title .label {
+      margin-right: 5px;
+      opacity: .8;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1>Project: <a href="<%= repo_url %>"><%= repo_title %></a></h1>
+          <p>Updated at <%= Time.now.strftime '%l:%I %p, %B %d, %Y' %></p>
+          <% if recently_closed.any? %>
+            <h2>Recently closed issues</h2>
+            <p><%= pluralize(recently_closed.count, 'issues') %>. Original overall estimation: <%= recently_closed_total_estimation_in_words %>.</p>
+            <table class="table table-bordered table-hover">
+              <tr>
+                <th>Issue</th>
+                <th>EST</th>
+                <th>Closed at</th>
+              </tr>
+              <% recently_closed.each do |issue| %>
+                <tr>
+                  <td>
+                    <p class="issue__title">
+                      <i class="fa fa-github status-icon status-icon--<%= issue.state %>"></i>
+                      <a href="<%= issue.url %>"><%= issue.title %></a>
+
+                      <% issue.labels.each do |label| %>
+                        <span class="label label-default" style="background-color:#<%= label.color %>">
+                          <%= label[:name] %>
+                        </span>
+                      <% end %>
+
+                      <span class="id-container pull-right">
+                        #<%= issue.number %>
+                        <span class="label label-danger"><%= issue.state.capitalize %></span>
+                      </span>
+                    </p>
+                  </td>
+                  <td class="col-md-2">
+                    <% if issue.estimates.any? %>
+                      <ul class="issue__estimates-list">
+                         <% issue.estimates.map do |estimate| %>
+                          <li class="issue__estimate">
+                            <%= estimate.duration_in_words.capitalize %>
+                          </li>
+                        <% end.join(', ') %>
+                      </ul>
+                    <% end %>
+                  </td>
+                  <td class="col-md-2">
+                    <%= issue.closed_at.strftime('%B %d, %Y') %>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
+            <hr>
+          <% end %>
+
+          <h2>Open issues</h2>
+          <p><%= pluralize(open_issues_count, 'issues') %>. Total estimation: about <%= total_estimation_in_words %>.</p>
+          <table class="table table-bordered table-hover">
+            <tr>
+              <th>Issue</th>
+              <th>EST</th>
+              <th>Updated at</th>
+            </tr>
+            <% open_issues.each do |issue| %>
+              <tr>
+                <td>
+                  <p class="issue__title">
+                    <i class="fa fa-github status-icon status-icon--<%= issue.state %>"></i>
+                    <a href="<%= issue.url %>"><%= issue.title %></a>
+
+                    <% issue.labels.each do |label| %>
+                      <span class="label label-default" style="background-color:#<%= label.color %>">
+                        <%= label[:name] %>
+                      </span>
+                    <% end %>
+
+                    <span class="id-container pull-right">
+                      #<%= issue.number %>
+                      <span class="label label-success"><%= issue.state.capitalize %></span>
+                    </span>
+                  </p>
+                </td>
+                <td class="col-md-2">
+                  <% if issue.estimates.any? %>
+                    <ul class="issue__estimates-list">
+                       <% issue.estimates.map do |estimate| %>
+                        <li class="issue__estimate">
+                          <%= estimate.duration_in_words.capitalize %>
+                        </li>
+                      <% end.join(', ') %>
+                    </ul>
+                  <% end %>
+                </td>
+                <td class="col-md-2">
+                  <%= issue.updated_at.strftime('%B %d, %Y') %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
