@@ -74,7 +74,7 @@ def load_recently_closed_issues
 end
 
 def recently_closed_issues
-  @recently_closed_issues = load_recently_closed_issues
+  @recently_closed_issues ||= load_recently_closed_issues
 end
 
 def process_issues(issues)
